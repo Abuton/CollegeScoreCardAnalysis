@@ -1,6 +1,6 @@
 # CollegeScoreCardAnalysis
 
-In this Project, I had analyze the data and answered the following questions;
+In this Project, I analyzed the data and answered the following questions;
 
 - ```How much has the price gone up on the cost of college over the last few years?```
 - ```Which States cost the most when it comes to attending college?```
