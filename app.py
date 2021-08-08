@@ -39,13 +39,32 @@ def pull_cost_by_year_metrics_private(df: DataFrame) -> DataFrame:
     results = df.groupby('year').agg(F.avg('NPT4_PRIV')).alias('avg_cost_private_instituiion')
     results.sort(F.col('year').desc()).show()
 
+# Which States cost the most when it comes to attending college?
 def pull_most_expensive_states_for_college(df: DataFrame):
     df = df.filter(F.col('year') == 2019)
     win = Window.partitionBy('STABBR').orderBy(F.col('NPT4_PUB').desc())
     df = df.withColumn('rowNum', F.row_number().over(win))
     df = df.filter(F.col('rowNum') <= 10)
     df = df.groupby('STABBR').agg(F.avg(F.col('NPT4_PUB')).alias('avg_cost'))
+    print('Which States cost the most when it comes to attending college?')
     df.sort(F.col('avg_cost').desc()).limit(10).show()
+
+# Which States has the highest number of student?
+def pull_number_of_student_per_states(df: DataFrame):
+    win = Window.partitionBy('STABBR').orderBy(F.col('NUM4_PUB').desc())
+    df = df.withColumn('rowNum', F.row_number().over(win))
+    df = df.groupby('STABBR').agg(F.sum(F.col('NUM4_PUB')).alias('total_number_of_students'))
+    print("Top 10 States with Higher Number of Student in Public Instituition")
+    df.sort(F.col('total_number_of_students').desc()).limit(10).show()
+
+# Which States has the highest number of student?
+def pull_number_of_student_per_states(df: DataFrame):
+    win = Window.partitionBy('STABBR').orderBy(F.col('NUM4_PRIV').desc())
+    df = df.withColumn('rowNum', F.row_number().over(win))
+    df = df.groupby('STABBR').agg(F.sum(F.col('NUM4_PRIV')).alias('total_number_of_students'))
+    print("Top 10 States with Higher Number of Student in Private Instituition")
+    df.sort(F.col('total_number_of_students').desc()).limit(10).show()
+    
 
 
 def main():
@@ -59,6 +78,7 @@ def main():
     pull_cost_by_year_metrics_public(df)
     pull_cost_by_year_metrics_private(df)
     pull_most_expensive_states_for_college(df)
+    pull_number_of_student_per_states(df)
 
 
 # Press the green button in the gutter to run the script.
