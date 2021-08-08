@@ -4,6 +4,7 @@
 from pyspark.sql import SparkSession, DataFrame, Window
 import pyspark.sql.functions as F
 
+
 # read all csv data in data/
 def read_college_date(spark: SparkSession, data_location: str = 'data/*.csv') -> DataFrame:
     df = spark.read.csv(data_location, header='true')
@@ -16,7 +17,7 @@ def add_source_file(df: DataFrame) -> DataFrame:
 
 # select only important columns
 def select_and_filter(df: DataFrame) -> DataFrame:
-    df = df.select('NPT4_PUB', 'NPT4_PRIV', 'STABBR', 'source_file')
+    df = df.select('NPT4_PUB', 'NPT4_PRIV', 'NUM4_PUB', 'NUM4_PRIV', 'INSTNM', 'STABBR', 'source_file')
     df = df.where(F.col('NPT4_PUB') != 'NULL') # if we don't have cost information, throw it out.
     return df
 
@@ -65,7 +66,12 @@ def pull_number_of_student_per_states_private(df: DataFrame):
     print("Top 10 States with Higher Number of Student in Private Instituition")
     df.sort(F.col('total_number_of_students').desc()).limit(20).show()
     
-
+def pull_avg_number_of_students_public_instituition(df: DataFrame):
+    win = Window.partitionBy('INSTNM').orderBy(F.col('NUM4_PUB').desc())
+    df = df.withColumn('rowNum', F.row_number().over(win))
+    results = df.groupBy('INSTNM').agg(F.avg('NUM4_PUB').alias('avg_number_student_count'))
+    print("Top 20 Public Instituition based on Average Number of student")
+    results.sort(F.col('avg_number_student_count').desc()).show(20)
 
 def main():
     spark = SparkSession.builder.appName('HistoricCollegeData') \
@@ -80,8 +86,8 @@ def main():
     pull_most_expensive_states_for_college(df)
     pull_number_of_student_per_states_public(df)
     pull_number_of_student_per_states_private(df)
+    pull_avg_number_of_students_public_instituition(df)
 
 
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     main()
