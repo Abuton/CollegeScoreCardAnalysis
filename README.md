@@ -1,11 +1,14 @@
 # CollegeScoreCardAnalysis
 
-In this Project, I analyzed the data and answered the following questions;
+In this Project, I analyzed the College Score Card data and answered the following questions;
 
 - ```How much has the price gone up on the cost of college over the last few years?```
 - ```Which States cost the most when it comes to attending college?```
 - ```Which States has the highest number of student?```
 - ```get cost per year on private instituition```
+
+The answers to the above questions can be displayed on a Business Intelligence Tool like Tableau, Power BI etc and use a bash script to run the analysis 
+every week/month to get the latest answer to the question. This can further be used to make judgement or decision that can impact the business.
 
 ## Project Details
 
